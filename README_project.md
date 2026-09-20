@@ -67,3 +67,27 @@ Test if running:
 ### Embedding model
 
 `ollama pull nomic-embed-text`
+
+## Testing scripts
+
+`npx tsx --env-file=.env.local src/scripts/seed.ts`
+`npx tsx --env-file=.env.local src/scripts/test-audit.ts`
+
+## Pull model
+
+`ollama pull llama3.1`
+
+# Rules process
+
+```
+[ Raw Rule Text ]
+       │
+       ▼
+1. Send text to Ollama ('nomic-embed-text')
+       │
+       ▼
+2. Receive 768-dim Vector Array: [-0.0142, 0.0821, ...]
+       │
+       ▼
+3. Store in Supabase: INSERT INTO contract_rules (...)
+```
