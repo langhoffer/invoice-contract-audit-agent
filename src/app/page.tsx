@@ -1,4 +1,5 @@
 'use client';
+import { runAuditAction } from '@/app/actions/audit';
 import React, { useState, useRef } from 'react';
 import {
   Upload,
@@ -7,7 +8,6 @@ import {
   CheckCircle2,
   XCircle,
   Sparkles,
-  ArrowRight,
   RefreshCw,
   ShieldCheck,
   Database,
@@ -15,9 +15,7 @@ import {
   Layers,
   DollarSign,
   Trash2,
-  HelpCircle,
   FileCheck,
-  ChevronRight,
   Zap,
 } from 'lucide-react';
 
@@ -122,7 +120,8 @@ export default function App() {
     setError(null);
   };
 
-  const handleRunAudit = async () => {
+  const handleRunAudit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!file && !useDemoText) return;
 
     setIsProcessing(true);
@@ -130,85 +129,40 @@ export default function App() {
     setAuditResult(null);
 
     try {
+      const formData = new FormData();
+
       if (file) {
         setProcessingStep('Extracting PDF text content...');
-        const formData = new FormData();
         formData.append('file', file);
-
-        setProcessingStep(
-          'Vectorizing & querying contract rules in Supabase...'
-        );
-
-        // Simulating progressive status for UI polish
-        setTimeout(
-          () =>
-            setProcessingStep(
-              'Auditing against retrieved rules with Ollama llama3.1...'
-            ),
-          1200
-        );
-
-        const res = await fetch('/api/audit', {
-          method: 'POST',
-          body: formData,
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Failed to complete audit.');
-        }
-
-        setAuditResult(data.audit);
       } else if (useDemoText) {
-        setProcessingStep('Vectorizing demo invoice text...');
-        setTimeout(
-          () =>
-            setProcessingStep('Auditing against Acme Corp contract rules...'),
-          1000
-        );
-
-        // Fallback or direct testing mock if direct API call fails on demo
-        const res = await fetch('/api/audit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ invoiceText: DEMO_INVOICE_TEXT }),
-        });
-
-        if (!res.ok) {
-          // If API expects FormData only, provide immediate fallback demo result for instant test
-          setAuditResult({
-            vendorName: 'Acme Corp',
-            isCompliant: false,
-            summary:
-              'Invoice #INV-2026-991 contains two contract non-compliance issues: overcharged senior engineering consulting rate and non-standard payment terms.',
-            violations: [
-              {
-                ruleCategory: 'Billing Limit',
-                contractRule:
-                  'Maximum hourly rate for senior engineering consulting is capped at $150/hr.',
-                invoiceClaim:
-                  'Senior Engineering Consulting - 10 hours @ $200/hr = $2,000',
-                discrepancyDescription:
-                  'Invoice claims $200/hr rate, exceeding the contract-capped rate of $150/hr.',
-                financialImpact: '$500 overcharge ($50/hr excess)',
-              },
-              {
-                ruleCategory: 'Payment Terms',
-                contractRule:
-                  'Payment terms are Net 30 days. Late payments incur a 1.5% monthly fee.',
-                invoiceClaim: 'Payment Terms: Net 15 Days',
-                discrepancyDescription:
-                  'Invoice payment terms deviate from standard Net 30 contract terms, requiring earlier cash outflow.',
-                financialImpact: 'Accelerated cash flow demand',
-              },
-            ],
-          });
-        } else {
-          const data = await res.json();
-          setAuditResult(data.audit || data);
-        }
+        setProcessingStep('Loading demo invoice text...');
+        formData.append('invoiceText', DEMO_INVOICE_TEXT);
       }
+
+      setTimeout(
+        () =>
+          setProcessingStep(
+            'Vectorizing & querying contract rules in Supabase...'
+          ),
+        800
+      );
+
+      setTimeout(
+        () =>
+          setProcessingStep(
+            'Auditing against retrieved rules with Ollama llama3.1...'
+          ),
+        1600
+      );
+
+      // Call the Server Action directly
+      const response = await runAuditAction(formData);
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Failed to complete audit.');
+      }
+
+      setAuditResult(response.data);
     } catch (err: any) {
       console.error('Audit execution error:', err);
       setError(
@@ -379,7 +333,7 @@ export default function App() {
               <div className="mt-6 flex flex-col gap-3">
                 <button
                   type="button"
-                  onClick={handleRunAudit}
+                  onClick={() => handleRunAudit()}
                   disabled={(!file && !useDemoText) || isProcessing}
                   className="w-full py-3 px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-indigo-600/25"
                 >
