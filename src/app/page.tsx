@@ -23,6 +23,7 @@ import {
 import { runAuditAction } from '@/app/actions/audit';
 import { ContractIngestionModal } from '@/app/components/ContractIngestionModal';
 import { ExportAuditButton } from '@/app/components/ExportAuditButton';
+import { MetricsVisualizer } from '@/app/components/MetricsVisualizer';
 
 export interface AuditViolation {
   ruleCategory: string;
@@ -494,42 +495,8 @@ export default function App() {
                     </p>
                   </div>
 
-                  {/* PERFORMANCE METRICS BAR */}
                   {auditResult.metrics && (
-                    <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
-                      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/60">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
-                          Total Time
-                        </span>
-                        <span className="text-sm font-mono text-emerald-400">
-                          {auditResult.metrics.totalDurationMs} ms
-                        </span>
-                      </div>
-                      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/60">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
-                          Vector Search
-                        </span>
-                        <span className="text-sm font-mono text-blue-400">
-                          {auditResult.metrics.retrievalDurationMs} ms
-                        </span>
-                      </div>
-                      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/60">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
-                          LLM Eval
-                        </span>
-                        <span className="text-sm font-mono text-purple-400">
-                          {auditResult.metrics.evaluationDurationMs} ms
-                        </span>
-                      </div>
-                      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/60">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
-                          Rules Used
-                        </span>
-                        <span className="text-sm font-mono text-amber-400">
-                          {auditResult.metrics.contractRulesRetrieved} rules
-                        </span>
-                      </div>
-                    </div>
+                    <MetricsVisualizer metrics={auditResult.metrics} />
                   )}
                 </div>
 
