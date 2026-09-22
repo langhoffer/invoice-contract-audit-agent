@@ -20,6 +20,7 @@ import {
   Target,
   PlusCircle,
   Sliders,
+  History,
 } from 'lucide-react';
 import { runAuditAction } from '@/app/actions/audit';
 import { ContractIngestionModal } from '@/app/components/ContractIngestionModal';
@@ -27,6 +28,7 @@ import { ExportAuditButton } from '@/app/components/ExportAuditButton';
 import { MetricsVisualizer } from '@/app/components/MetricsVisualizer';
 import { BatchAuditModal } from '@/app/components/BatchAuditModal';
 import { DynamicRuleManager } from '@/app/components/DynamicRuleManager';
+import { AuditTrailModal } from '@/app/components/AuditTrailModal';
 
 export interface AuditViolation {
   ruleCategory: string;
@@ -75,6 +77,7 @@ export default function App() {
   const [useDemoText, setUseDemoText] = useState<boolean>(false);
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [isRuleManagerOpen, setIsRuleManagerOpen] = useState(false);
+  const [isAuditTrailOpen, setIsAuditTrailOpen] = useState(false);
 
   // State for Contract Ingestion Modal
   const [isIngestionModalOpen, setIsIngestionModalOpen] =
@@ -257,6 +260,15 @@ export default function App() {
             >
               <Sliders className="w-4 h-4" />
               <span>Manage Rules</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsAuditTrailOpen(true)}
+              className="px-4 py-2 rounded-xl text-xs font-medium bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 transition-all"
+            >
+              <History className="w-4 h-4" />
+              <span>Audit Trail</span>
             </button>
 
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -641,6 +653,11 @@ export default function App() {
       <DynamicRuleManager
         isOpen={isRuleManagerOpen}
         onClose={() => setIsRuleManagerOpen(false)}
+      />
+
+      <AuditTrailModal
+        isOpen={isAuditTrailOpen}
+        onClose={() => setIsAuditTrailOpen(false)}
       />
     </div>
   );
