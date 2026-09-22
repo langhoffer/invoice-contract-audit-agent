@@ -1,6 +1,6 @@
 'use client';
-import { runAuditAction } from '@/app/actions/audit';
-import React, { useState, useRef } from 'react';
+
+import { useState, useRef } from 'react';
 import {
   Upload,
   FileText,
@@ -18,7 +18,11 @@ import {
   FileCheck,
   Zap,
   Target,
+  PlusCircle,
 } from 'lucide-react';
+import { runAuditAction } from '@/app/actions/audit';
+import { ContractIngestionModal } from '@/app/components/ContractIngestionModal';
+import { ExportAuditButton } from '@/app/components/ExportAuditButton';
 
 export interface AuditViolation {
   ruleCategory: string;
@@ -41,7 +45,7 @@ export interface AuditResult {
   isCompliant: boolean;
   violations: AuditViolation[];
   summary: string;
-  metrics?: AuditMetrics; // Added metrics
+  metrics?: AuditMetrics;
 }
 
 // Sample demo invoice text for quick testing without file upload
@@ -65,6 +69,10 @@ export default function App() {
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [useDemoText, setUseDemoText] = useState<boolean>(false);
+
+  // State for Contract Ingestion Modal
+  const [isIngestionModalOpen, setIsIngestionModalOpen] =
+    useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -165,7 +173,6 @@ export default function App() {
         1600
       );
 
-      // Call the Server Action directly
       const response = await runAuditAction(formData);
 
       if (!response.success || !response.data) {
@@ -216,8 +223,18 @@ export default function App() {
             </div>
           </div>
 
-          {/* System Status Indicators */}
+          {/* Action Buttons & System Status Indicators */}
           <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+            {/* Button to open Contract Ingestion Modal */}
+            <button
+              type="button"
+              onClick={() => setIsIngestionModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/30 transition-all font-sans font-medium"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              Ingest Contract
+            </button>
+
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Ollama Connected
@@ -444,8 +461,8 @@ export default function App() {
                       </h2>
                     </div>
 
-                    {/* Compliance Status Badge */}
-                    <div>
+                    {/* Status Badge & Export Button */}
+                    <div className="flex items-center gap-3">
                       {auditResult.isCompliant ? (
                         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
                           <CheckCircle2 className="w-4 h-4" />
@@ -461,6 +478,9 @@ export default function App() {
                           <span>Violations Detected</span>
                         </div>
                       )}
+
+                      {/* Export Audit Button Component */}
+                      <ExportAuditButton auditResult={auditResult} />
                     </div>
                   </div>
 
@@ -535,7 +555,6 @@ export default function App() {
                             </span>
 
                             <div className="flex items-center gap-2">
-                              {/* === NEW: CONFIDENCE BADGE === */}
                               {violation.confidenceScore !== undefined && (
                                 <span className="px-2.5 py-1 rounded-md bg-slate-800/50 text-slate-300 border border-slate-700/50 text-xs font-semibold flex items-center gap-1">
                                   <Target className="w-3 h-3" />
@@ -617,6 +636,12 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      {/* Contract Ingestion Modal */}
+      <ContractIngestionModal
+        isOpen={isIngestionModalOpen}
+        onClose={() => setIsIngestionModalOpen(false)}
+      />
     </div>
   );
 }
