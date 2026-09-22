@@ -13,20 +13,39 @@ export interface AuditResult {
     invoiceClaim: string;
     discrepancyDescription: string;
     financialImpact: string;
+    confidenceScore?: number; // Added confidence score
   }>;
   summary: string;
+  metrics?: {
+    // Added performance metrics
+    totalDurationMs: number;
+    retrievalDurationMs: number;
+    evaluationDurationMs: number;
+    contractRulesRetrieved: number;
+  };
 }
 
 export async function auditInvoice(invoiceText: string): Promise<AuditResult> {
-  // 1. Fetch relevant contract rules via vector search
+  const startTime = performance.now();
+
+  // 1. Fetch relevant contract rules via vector search & measure time
+  const retrievalStart = performance.now();
   const matchedRules = await searchContractRules(invoiceText);
+  const retrievalDurationMs = Math.round(performance.now() - retrievalStart);
 
   if (!matchedRules.length) {
+    const totalDurationMs = Math.round(performance.now() - startTime);
     return {
       vendorName: 'Unknown',
       isCompliant: true,
       violations: [],
       summary: 'No relevant contract rules found in database to audit against.',
+      metrics: {
+        totalDurationMs,
+        retrievalDurationMs,
+        evaluationDurationMs: 0,
+        contractRulesRetrieved: 0,
+      },
     };
   }
 
@@ -53,7 +72,8 @@ ${invoiceText}
 INSTRUCTIONS:
 1. Compare the items, rates, payment terms, and totals in the INVOICE against the CONTRACT RULES.
 2. Flag ANY discrepancy, overcharge, unapplied discount, or term violation.
-3. Return your analysis strictly as a valid JSON object matching this schema:
+3. For each violation, assign an integer confidenceScore from 0 to 100 based on certainty.
+4. Return your analysis strictly as a valid JSON object matching this schema:
 
 {
   "vendorName": "string",
@@ -64,7 +84,8 @@ INSTRUCTIONS:
       "contractRule": "string",
       "invoiceClaim": "string",
       "discrepancyDescription": "string",
-      "financialImpact": "string"
+      "financialImpact": "string",
+      "confidenceScore": number
     }
   ],
   "summary": "string"
@@ -73,7 +94,8 @@ INSTRUCTIONS:
 OUTPUT STRICTLY VALID JSON ONLY. DO NOT INCLUDE ANY CONVERSATIONAL PREAMBLE OR TRAILING EXPLANATIONS.
 `;
 
-  // 3. Query LLM natively with AI SDK v5
+  // 3. Query LLM natively with AI SDK v5 & measure evaluation time
+  const evalStart = performance.now();
   const model = getLanguageModel();
 
   const response = await generateText({
@@ -81,6 +103,7 @@ OUTPUT STRICTLY VALID JSON ONLY. DO NOT INCLUDE ANY CONVERSATIONAL PREAMBLE OR T
     prompt,
     temperature: 0.1,
   });
+  const evaluationDurationMs = Math.round(performance.now() - evalStart);
 
   const rawText = response.text.trim();
 
@@ -93,7 +116,19 @@ OUTPUT STRICTLY VALID JSON ONLY. DO NOT INCLUDE ANY CONVERSATIONAL PREAMBLE OR T
   }
 
   try {
-    const auditData: AuditResult = JSON.parse(jsonMatch[0]);
+    const parsedData = JSON.parse(jsonMatch[0]);
+    const totalDurationMs = Math.round(performance.now() - startTime);
+
+    const auditData: AuditResult = {
+      ...parsedData,
+      metrics: {
+        totalDurationMs,
+        retrievalDurationMs,
+        evaluationDurationMs,
+        contractRulesRetrieved: matchedRules.length,
+      },
+    };
+
     return auditData;
   } catch (err) {
     console.error('Failed to parse extracted JSON block:\n', jsonMatch[0]);

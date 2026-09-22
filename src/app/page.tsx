@@ -17,6 +17,7 @@ import {
   Trash2,
   FileCheck,
   Zap,
+  Target,
 } from 'lucide-react';
 
 export interface AuditViolation {
@@ -25,6 +26,14 @@ export interface AuditViolation {
   invoiceClaim: string;
   discrepancyDescription: string;
   financialImpact: string;
+  confidenceScore?: number;
+}
+
+export interface AuditMetrics {
+  totalDurationMs: number;
+  retrievalDurationMs: number;
+  evaluationDurationMs: number;
+  contractRulesRetrieved: number;
 }
 
 export interface AuditResult {
@@ -32,6 +41,7 @@ export interface AuditResult {
   isCompliant: boolean;
   violations: AuditViolation[];
   summary: string;
+  metrics?: AuditMetrics; // Added metrics
 }
 
 // Sample demo invoice text for quick testing without file upload
@@ -162,7 +172,7 @@ export default function App() {
         throw new Error(response.error || 'Failed to complete audit.');
       }
 
-      setAuditResult(response.data);
+      setAuditResult(response.data as AuditResult);
     } catch (err: any) {
       console.error('Audit execution error:', err);
       setError(
@@ -463,6 +473,44 @@ export default function App() {
                       {auditResult.summary}
                     </p>
                   </div>
+
+                  {/* PERFORMANCE METRICS BAR */}
+                  {auditResult.metrics && (
+                    <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/60">
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
+                          Total Time
+                        </span>
+                        <span className="text-sm font-mono text-emerald-400">
+                          {auditResult.metrics.totalDurationMs} ms
+                        </span>
+                      </div>
+                      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/60">
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
+                          Vector Search
+                        </span>
+                        <span className="text-sm font-mono text-blue-400">
+                          {auditResult.metrics.retrievalDurationMs} ms
+                        </span>
+                      </div>
+                      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/60">
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
+                          LLM Eval
+                        </span>
+                        <span className="text-sm font-mono text-purple-400">
+                          {auditResult.metrics.evaluationDurationMs} ms
+                        </span>
+                      </div>
+                      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/60">
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">
+                          Rules Used
+                        </span>
+                        <span className="text-sm font-mono text-amber-400">
+                          {auditResult.metrics.contractRulesRetrieved} rules
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Violations List */}
@@ -480,17 +528,28 @@ export default function App() {
                           key={idx}
                           className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 hover:border-slate-700/80 rounded-2xl p-5 space-y-4 shadow-lg transition-all"
                         >
-                          {/* Category Tag & Financial Impact */}
+                          {/* Category Tag, Financial Impact, & Confidence */}
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <span className="px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs font-mono font-medium">
                               {violation.ruleCategory}
                             </span>
-                            {violation.financialImpact && (
-                              <span className="px-3 py-1 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/20 text-xs font-semibold flex items-center gap-1">
-                                <DollarSign className="w-3.5 h-3.5" />
-                                {violation.financialImpact}
-                              </span>
-                            )}
+
+                            <div className="flex items-center gap-2">
+                              {/* === NEW: CONFIDENCE BADGE === */}
+                              {violation.confidenceScore !== undefined && (
+                                <span className="px-2.5 py-1 rounded-md bg-slate-800/50 text-slate-300 border border-slate-700/50 text-xs font-semibold flex items-center gap-1">
+                                  <Target className="w-3 h-3" />
+                                  {violation.confidenceScore}% Confidence
+                                </span>
+                              )}
+
+                              {violation.financialImpact && (
+                                <span className="px-3 py-1 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/20 text-xs font-semibold flex items-center gap-1">
+                                  <DollarSign className="w-3.5 h-3.5" />
+                                  {violation.financialImpact}
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           {/* Rule vs Claim Comparison Grid */}
