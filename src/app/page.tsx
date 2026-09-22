@@ -19,12 +19,14 @@ import {
   Zap,
   Target,
   PlusCircle,
+  Sliders,
 } from 'lucide-react';
 import { runAuditAction } from '@/app/actions/audit';
 import { ContractIngestionModal } from '@/app/components/ContractIngestionModal';
 import { ExportAuditButton } from '@/app/components/ExportAuditButton';
 import { MetricsVisualizer } from '@/app/components/MetricsVisualizer';
 import { BatchAuditModal } from '@/app/components/BatchAuditModal';
+import { DynamicRuleManager } from '@/app/components/DynamicRuleManager';
 
 export interface AuditViolation {
   ruleCategory: string;
@@ -72,6 +74,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [useDemoText, setUseDemoText] = useState<boolean>(false);
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+  const [isRuleManagerOpen, setIsRuleManagerOpen] = useState(false);
 
   // State for Contract Ingestion Modal
   const [isIngestionModalOpen, setIsIngestionModalOpen] =
@@ -245,6 +248,15 @@ export default function App() {
             >
               <Layers className="w-4 h-4" />
               <span>Batch Audit</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsRuleManagerOpen(true)}
+              className="px-4 py-2 rounded-xl text-xs font-medium bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-2 transition-all"
+            >
+              <Sliders className="w-4 h-4" />
+              <span>Manage Rules</span>
             </button>
 
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -624,6 +636,11 @@ export default function App() {
       <BatchAuditModal
         isOpen={isBatchModalOpen}
         onClose={() => setIsBatchModalOpen(false)}
+      />
+
+      <DynamicRuleManager
+        isOpen={isRuleManagerOpen}
+        onClose={() => setIsRuleManagerOpen(false)}
       />
     </div>
   );
