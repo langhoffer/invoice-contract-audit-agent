@@ -11,6 +11,13 @@ export interface ContractRule {
   similarity: number;
 }
 
+export interface IngestRuleParams {
+  vendorName: string;
+  ruleCategory: string;
+  content: string;
+  embedding: number[];
+}
+
 const isLocal =
   process.env.USE_LOCAL_AI?.trim().replace(/['"]/g, '') === 'true';
 
@@ -20,7 +27,7 @@ const ollamaClient = new Ollama({
     'http://127.0.0.1:11434',
 });
 
-async function generateQueryVector(text: string): Promise<number[]> {
+export async function generateQueryVector(text: string): Promise<number[]> {
   if (isLocal) {
     const response = await ollamaClient.embeddings({
       model: 'nomic-embed-text',
@@ -54,4 +61,25 @@ export async function searchContractRules(
   }
 
   return data as ContractRule[];
+}
+
+export async function insertContractRule({
+  vendorName,
+  ruleCategory,
+  content,
+  embedding,
+}: IngestRuleParams) {
+  const { data, error } = await supabase.from('contract_rules').insert({
+    vendor_name: vendorName,
+    rule_category: ruleCategory,
+    content,
+    embedding,
+  });
+
+  if (error) {
+    console.error('Error inserting contract rule into pgvector:', error);
+    throw new Error(`Database insertion failed: ${error.message}`);
+  }
+
+  return data;
 }
