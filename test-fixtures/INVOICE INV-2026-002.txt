@@ -1,0 +1,19 @@
+INVOICE #INV-2026-042
+Date: September 20, 2026
+Vendor: Acme Consulting Corp
+
+Bill To:
+Enterprise AI Solutions Inc.
+
+--------------------------------------------------
+LINE ITEMS:
+--------------------------------------------------
+1. Senior AI Engineering Services (40 hours @ $220/hr)   $8,800.00
+2. Emergency Weekend Deployment (10 hours @ $300/hr)    $3,000.00
+3. Software Licensing Passthrough                      $1,200.00
+
+--------------------------------------------------
+TOTAL AMOUNT DUE: $13,000.00
+--------------------------------------------------
+Payment Terms: Net 30
+Notes: Please remit via wire transfer. Includes overtime surcharge.

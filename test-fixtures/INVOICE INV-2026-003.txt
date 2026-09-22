@@ -1,0 +1,18 @@
+INVOICE #INV-2026-043
+Date: September 21, 2026
+Vendor: Acme Consulting Corp
+
+Bill To:
+Enterprise AI Solutions Inc.
+
+--------------------------------------------------
+LINE ITEMS:
+--------------------------------------------------
+1. Standard Engineering Support (30 hours @ $150/hr)   $4,500.00
+2. Standard Cloud Hosting Passthrough                   $850.00
+
+--------------------------------------------------
+TOTAL AMOUNT DUE: $5,350.00
+--------------------------------------------------
+Payment Terms: Net 30
+Notes: Standard billing according to master services agreement.

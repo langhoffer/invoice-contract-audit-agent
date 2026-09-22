@@ -1,0 +1,13 @@
+INVOICE #INV-2026-001
+Date: October 15, 2026
+Vendor: Acme Consulting LLC
+Client: Enterprise Corp
+
+Services Provided:
+- Senior Software Engineering Services
+- Hours Billed: 40 hours
+- Billed Rate: $200.00 / hour
+- Total Amount Due: $8,000.00
+
+Payment Terms: Net 15
+Late Fee: 5% per month on overdue balances
