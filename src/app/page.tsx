@@ -24,6 +24,7 @@ import { runAuditAction } from '@/app/actions/audit';
 import { ContractIngestionModal } from '@/app/components/ContractIngestionModal';
 import { ExportAuditButton } from '@/app/components/ExportAuditButton';
 import { MetricsVisualizer } from '@/app/components/MetricsVisualizer';
+import { BatchAuditModal } from '@/app/components/BatchAuditModal';
 
 export interface AuditViolation {
   ruleCategory: string;
@@ -70,6 +71,7 @@ export default function App() {
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [useDemoText, setUseDemoText] = useState<boolean>(false);
+  const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
 
   // State for Contract Ingestion Modal
   const [isIngestionModalOpen, setIsIngestionModalOpen] =
@@ -234,6 +236,15 @@ export default function App() {
             >
               <PlusCircle className="w-3.5 h-3.5" />
               Ingest Contract
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsBatchModalOpen(true)}
+              className="px-4 py-2 rounded-xl text-xs font-medium bg-purple-600/10 hover:bg-purple-600/20 text-purple-300 border border-purple-500/30 flex items-center gap-2 transition-all"
+            >
+              <Layers className="w-4 h-4" />
+              <span>Batch Audit</span>
             </button>
 
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -608,6 +619,11 @@ export default function App() {
       <ContractIngestionModal
         isOpen={isIngestionModalOpen}
         onClose={() => setIsIngestionModalOpen(false)}
+      />
+
+      <BatchAuditModal
+        isOpen={isBatchModalOpen}
+        onClose={() => setIsBatchModalOpen(false)}
       />
     </div>
   );
