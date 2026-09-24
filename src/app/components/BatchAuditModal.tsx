@@ -116,7 +116,20 @@ export function BatchAuditModal({ isOpen, onClose }: BatchAuditModalProps) {
         {/* Content Area */}
         {!batchSummary ? (
           <div className="space-y-4">
-            <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-800 hover:border-purple-500/50 bg-slate-950/50 rounded-xl p-6 cursor-pointer transition-all text-center">
+            <label
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files) {
+                  const droppedFiles = Array.from(e.dataTransfer.files).filter(
+                    (f) =>
+                      f.type === 'application/pdf' || f.name.endsWith('.pdf')
+                  );
+                  setFiles((prev) => [...prev, ...droppedFiles]);
+                }
+              }}
+              className="flex flex-col items-center justify-center border-2 border-dashed border-slate-800 hover:border-purple-500/50 bg-slate-950/50 rounded-xl p-6 cursor-pointer transition-all text-center"
+            >
               <input
                 type="file"
                 multiple
@@ -126,7 +139,7 @@ export function BatchAuditModal({ isOpen, onClose }: BatchAuditModalProps) {
               />
               <Upload className="w-8 h-8 text-purple-400 mb-2" />
               <span className="text-sm font-medium text-slate-200">
-                Click to select multiple PDF invoices
+                Click or drag & drop multiple PDF invoices
               </span>
               <span className="text-xs text-slate-500 mt-1">
                 Supports batch queuing
