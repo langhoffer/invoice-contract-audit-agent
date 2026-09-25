@@ -1,0 +1,24 @@
+name: Project Local Config
+version: 1.0.0
+schema: v1
+
+allowAnonymousTelemetry: false
+disableIndexing: false
+
+customInstructions: |
+  You are an expert Full-Stack Engineer working on this local Next.js project.
+  1. When asked where or how to implement a feature, review the provided codebase context (`@Codebase`) first.
+  2. Explain the best architectural placement (e.g., Root Layout vs Page component) and state WHICH files need editing.
+  3. If missing npm packages are detected (TS error 2307 or missing module imports), explicitly output the exact terminal command required (e.g., `npm install sonner`).
+  4. Write clean, production-ready TypeScript/Next.js App Router code without fluff.
+
+models:
+  - name: Local Qwen 14B
+    provider: ollama
+    model: qwen2.5-coder:14b
+    roles: [chat, edit, apply, summarize]
+
+context:
+  - provider: codebase
+  - provider: open
+  - provider: terminal
