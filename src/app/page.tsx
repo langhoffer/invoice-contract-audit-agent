@@ -22,6 +22,7 @@ import {
   Sliders,
   History,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { runAuditAction } from '@/app/actions/audit';
 import { ContractIngestionModal } from '@/app/components/ContractIngestionModal';
 import { ExportAuditButton } from '@/app/components/ExportAuditButton';
@@ -185,10 +186,11 @@ export default function App() {
       const response = await runAuditAction(formData);
 
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to complete audit.');
+        toast.error('Failed to complete audit.');
       }
 
       setAuditResult(response.data as AuditResult);
+      toast.success(`Audit complete`);
     } catch (err: any) {
       console.error('Audit execution error:', err);
       setError(
