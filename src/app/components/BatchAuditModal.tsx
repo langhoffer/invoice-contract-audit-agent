@@ -10,6 +10,7 @@ import {
   X,
   ShieldAlert,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   runBatchAuditAction,
   BatchAuditSummary,
@@ -68,10 +69,15 @@ export function BatchAuditModal({ isOpen, onClose }: BatchAuditModalProps) {
       clearInterval(interval);
 
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Batch audit failed');
+        const message = response.error || 'Batch audit failed';
+        setError(message);
+        toast.error(message);
+        setBatchSummary(null);
+        return;
       }
 
       setBatchSummary(response.data);
+      toast.success('Batch audit complete.');
     } catch (err: any) {
       setError(err.message || 'Error processing batch invoices');
     } finally {

@@ -213,7 +213,7 @@ export default function App() {
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-8 space-y-8">
         {/* Header Section */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
+        <header className="flex flex-col md:flex-col md:items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
           <div>
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20">
@@ -222,7 +222,7 @@ export default function App() {
               <div>
                 <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
                   Invoice & Contract Audit Agent
-                  <span className="text-xs font-mono font-normal px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                  <span className="text-xs text-center font-mono font-normal px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                     v1.0 Local RAG
                   </span>
                 </h1>
