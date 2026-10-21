@@ -3,7 +3,6 @@ import { parsePdfBuffer } from '@/lib/pdf/parser';
 import { auditInvoice } from '@/lib/ai/audit-engine';
 import { saveAuditLogAction } from '@/app/actions/auditLogs';
 
-// Mock external dependencies
 jest.mock('@/lib/pdf/parser', () => ({
   parsePdfBuffer: jest.fn(),
 }));
@@ -108,8 +107,7 @@ describe('runAuditAction Server Action', () => {
   });
 
   it('should return an error if neither file nor text is provided', async () => {
-    const formData = new FormData(); // Empty
-
+    const formData = new FormData();
     const result = await runAuditAction(formData);
 
     expect(result.success).toBe(false);

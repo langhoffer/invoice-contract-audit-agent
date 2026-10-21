@@ -4,13 +4,10 @@ dotenv.config({ path: '.env.local' });
 import { embed } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createClient } from '@supabase/supabase-js';
-import { Ollama } from 'ollama'; // <--- Import named class 'Ollama' instead of default
+import { Ollama } from 'ollama';
 
-// Determine execution environment
 const isLocal =
   process.env.USE_LOCAL_AI?.trim().replace(/['"]/g, '') === 'true';
-
-// Initialize Supabase Client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

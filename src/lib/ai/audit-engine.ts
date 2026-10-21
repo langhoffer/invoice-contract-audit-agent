@@ -1,4 +1,3 @@
-// src/lib/ai/audit-engine.ts
 import { generateText } from 'ai';
 import { getLanguageModel } from '@/lib/ai/provider';
 import { searchContractRules } from '@/lib/ai/vector-store';
@@ -13,11 +12,10 @@ export interface AuditResult {
     invoiceClaim: string;
     discrepancyDescription: string;
     financialImpact: string;
-    confidenceScore?: number; // Added confidence score
+    confidenceScore?: number;
   }>;
   summary: string;
   metrics?: {
-    // Added performance metrics
     totalDurationMs: number;
     retrievalDurationMs: number;
     evaluationDurationMs: number;
@@ -28,7 +26,7 @@ export interface AuditResult {
 export async function auditInvoice(invoiceText: string): Promise<AuditResult> {
   const startTime = performance.now();
 
-  // 1. Fetch relevant contract rules via vector search & measure time
+  // Fetch relevant contract rules via vector search & measure time
   const retrievalStart = performance.now();
   const matchedRules = await searchContractRules(invoiceText);
   const retrievalDurationMs = Math.round(performance.now() - retrievalStart);
@@ -57,7 +55,7 @@ export async function auditInvoice(invoiceText: string): Promise<AuditResult> {
     )
     .join('\n\n');
 
-  // 2. Prepare System Prompt for Llama 3.1 / Local Provider
+  // Prepare System Prompt for Llama 3.1 / Local Provider
   const prompt = `
 You are an expert Enterprise Invoice and Contract Auditor. Your job is to catch overcharges, unauthorized fees, rate breaches, and missed discounts.
 
@@ -94,7 +92,7 @@ INSTRUCTIONS:
 OUTPUT STRICTLY VALID JSON ONLY. DO NOT INCLUDE ANY CONVERSATIONAL PREAMBLE OR TRAILING EXPLANATIONS.
 `;
 
-  // 3. Query LLM natively with AI SDK v5 & measure evaluation time
+  // Query LLM natively with AI SDK v5 & measure evaluation time
   const evalStart = performance.now();
   const model = getLanguageModel();
 

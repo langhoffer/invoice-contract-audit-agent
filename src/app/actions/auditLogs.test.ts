@@ -4,7 +4,6 @@ import {
 } from '@/app/actions/auditLogs';
 import { supabase } from '@/lib/db';
 
-// Mock Supabase admin client
 jest.mock('@/lib/db', () => ({
   supabase: {
     from: jest.fn(() => ({

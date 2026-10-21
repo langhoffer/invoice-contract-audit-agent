@@ -1,9 +1,7 @@
-// src/lib/ai/audit-engine.test.ts
 import { auditInvoice } from '@/lib/ai/audit-engine';
 import { generateText } from 'ai';
 import { searchContractRules } from '@/lib/ai/vector-store';
 
-// Mock dependencies using absolute path aliases
 jest.mock('ai', () => ({
   generateText: jest.fn(),
 }));
@@ -36,7 +34,7 @@ describe('auditInvoice Engine', () => {
   });
 
   it('parses LLM JSON response and attaches timing metrics', async () => {
-    // 1. Mock vector store rules
+    // Mock vector store rules
     (searchContractRules as jest.Mock).mockResolvedValueOnce([
       {
         vendor_name: 'Acme Corp',
@@ -45,7 +43,7 @@ describe('auditInvoice Engine', () => {
       },
     ]);
 
-    // 2. Mock LLM output matching updated JSON structure
+    // Mock LLM output matching updated JSON structure
     const mockLlmOutput = JSON.stringify({
       vendorName: 'Acme Corp',
       isCompliant: false,
@@ -66,16 +64,12 @@ describe('auditInvoice Engine', () => {
       text: mockLlmOutput,
     });
 
-    // 3. Run audit
     const result = await auditInvoice('Acme invoice content');
 
-    // 4. Assert response payload structure
     expect(result.vendorName).toBe('Acme Corp');
     expect(result.isCompliant).toBe(false);
     expect(result.violations).toHaveLength(1);
     expect(result.violations[0].confidenceScore).toBe(95);
-
-    // 5. Assert metrics calculation
     expect(result.metrics).toEqual({
       totalDurationMs: expect.any(Number),
       retrievalDurationMs: expect.any(Number),

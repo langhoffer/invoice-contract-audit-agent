@@ -1,7 +1,6 @@
 import * as auditActionModule from '@/app/actions/audit';
 import { runBatchAuditAction } from '@/app/actions/batch-audit';
 
-// Mock the single audit action
 jest.mock('@/app/actions/audit', () => ({
   runAuditAction: jest.fn(),
 }));
@@ -91,7 +90,6 @@ describe('runBatchAuditAction', () => {
 
     // FormData without a named file (triggers 'Demo Invoice' and 'Audit failed' fallbacks)
     const emptyFormData = new FormData();
-
     const result = await runBatchAuditAction([emptyFormData]);
 
     expect(result.success).toBe(true);
@@ -102,7 +100,6 @@ describe('runBatchAuditAction', () => {
   it('catches unexpected exceptions during batch execution', async () => {
     const mockRunAuditAction = auditActionModule.runAuditAction as jest.Mock;
 
-    // Force an unhandled exception
     mockRunAuditAction.mockRejectedValueOnce(new Error('Network failure'));
 
     const formData = new FormData();
