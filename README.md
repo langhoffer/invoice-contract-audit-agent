@@ -59,3 +59,5 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to view the 
 
 - **Database Safety:** All PostgreSQL tables enforce strict Row-Level Security (RLS) policies.
 - **Server-Only Credentials:** Service role keys and API credentials are kept strictly on the server side using Next.js `'use server'` actions.
+
+© 2026. All rights reserved.
